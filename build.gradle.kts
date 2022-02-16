@@ -6,6 +6,7 @@ val h2Version: String by project
 val exposedVersion: String by project
 val hikariCpVersion: String by project
 val flywayVersion: String by project
+val loggingVersion: String by project
 
 plugins {
     application
@@ -33,6 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
+    implementation("io.github.microutils:kotlin-logging-jvm:$loggingVersion")
 
     // https://mvnrepository.com/artifact/com.h2database/h2
     implementation("com.h2database:h2:$h2Version")
