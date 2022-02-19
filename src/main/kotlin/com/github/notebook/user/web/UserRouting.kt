@@ -1,41 +1,53 @@
 package com.github.notebook.user.web
 
-import com.github.notebook.user.model.Users
-import com.github.notebook.user.model.toUser
+import com.github.notebook.user.model.NewUser
+import com.github.notebook.user.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import org.jetbrains.exposed.sql.StdOutSqlLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
+
+const val ROUTING_ROOT = "/api/users"
 
 fun Route.userRouting() {
 
-    val ROUTING_ROOT = "/api/users"
-
     route(ROUTING_ROOT) {
         get {
-            call.respond(
-                transaction {
-                    addLogger(StdOutSqlLogger)
-                    return@transaction Users.selectAll().map { Users.toUser(it) }
-                }
-            )
+            call.respond(UserService.getAll())
         }
-        get("{name}") {
+
+        get("/{name}") {
             val userName = call.parameters["name"] ?: return@get call.respondText(
                 "Missing or malformed user name",
                 status = HttpStatusCode.BadRequest
             )
-            call.respond(
-                transaction {
-                    addLogger(StdOutSqlLogger)
-                    return@transaction Users.select { (Users.name eq userName) }.map { Users.toUser(it) }
-                }
+            val user = UserService.get(userName)
+            if (user == null) call.respond(HttpStatusCode.NotFound)
+            else call.respond(user)
+        }
+
+        post {
+            val user = call.receive<NewUser>()
+            call.respond(HttpStatusCode.Created, UserService.create(user))
+        }
+
+        put("/{name}") {
+            val userName = call.parameters["name"] ?: return@put call.respondText(
+                "Missing or malformed user name",
+                status = HttpStatusCode.BadRequest
             )
+            UserService.update(call.receive(), userName)
+            call.respond(HttpStatusCode.NoContent)
+        }
+
+        delete("/{name}") {
+            val userName = call.parameters["name"] ?: return@delete call.respondText(
+                "Missing or malformed user name",
+                status = HttpStatusCode.BadRequest
+            )
+            UserService.delete(userName)
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 }

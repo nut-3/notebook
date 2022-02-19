@@ -7,6 +7,11 @@ val exposedVersion: String by project
 val hikariCpVersion: String by project
 val flywayVersion: String by project
 val loggingVersion: String by project
+val assertjVersion: String by project
+val mockkVersion: String by project
+val restAssuredVersion: String by project
+val junitVersion: String by project
+val kompendiumVersion: String by project
 
 plugins {
     application
@@ -50,11 +55,21 @@ dependencies {
     // Flyway
     implementation("org.flywaydb:flyway-core:$flywayVersion")
 
+    //Kompedium Swagger
+    implementation("io.bkbn:kompendium-core:$kompendiumVersion")
+    implementation("io.bkbn:kompendium-oas:$kompendiumVersion")
+    implementation("io.bkbn:kompendium-swagger-ui:$kompendiumVersion")
+
     // Tests
-//    testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
-    //Swagger
-//    implementation("org.springdoc:springdoc-openapi-data-rest:$openapiVersion")
-//    implementation("org.springdoc:springdoc-openapi-ui:$openapiVersion")
-//    implementation("org.springdoc:springdoc-openapi-kotlin:$openapiVersion")
+//    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
+    testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
+    testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

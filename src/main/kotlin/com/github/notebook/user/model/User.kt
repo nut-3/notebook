@@ -31,6 +31,27 @@ data class User(
     val roles: Set<Role> = emptySet()
 )
 
+@kotlinx.serialization.Serializable
+data class NewUser(
+    val name: String,
+    val password: String,
+    val active: Boolean,
+    val email: String,
+    val fullName: String?,
+    val roles: Set<Role> = emptySet()
+)
+
+@kotlinx.serialization.Serializable
+data class EditUser(
+    val id: Int,
+    val name: String,
+    val password: String?,
+    val active: Boolean,
+    val email: String,
+    val fullName: String?,
+    val roles: Set<Role> = emptySet()
+)
+
 enum class Role { USER, ADMIN }
 
 

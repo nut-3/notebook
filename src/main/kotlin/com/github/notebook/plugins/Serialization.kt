@@ -1,19 +1,15 @@
 package com.github.notebook.plugins
 
 import io.ktor.serialization.kotlinx.json.*
-import io.ktor.server.plugins.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.plugins.*
+import kotlinx.serialization.json.Json
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json()
-    }
-
-    routing {
-        get("/json/kotlinx-serialization") {
-                call.respond(mapOf("hello" to "world"))
-            }
+        json(Json {
+            isLenient = true
+            ignoreUnknownKeys = true
+        })
     }
 }
