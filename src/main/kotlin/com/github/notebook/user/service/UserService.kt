@@ -15,6 +15,7 @@ object UserService {
     fun get(userName: String) = transaction {
         addLogger(Slf4jSqlDebugLogger)
         Users.select { (Users.name eq userName) }.mapNotNull { Users.toUser(it) }.singleOrNull()
+            ?: throw NotFoundException("User with name=$userName not found")
     }
 
     fun create(user: NewUser) = transaction {

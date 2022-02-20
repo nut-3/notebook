@@ -5,6 +5,8 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.response.*
 import org.valiktor.ConstraintViolationException
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun Application.configureStatusPages() {
     install(StatusPages) {
@@ -12,29 +14,44 @@ fun Application.configureStatusPages() {
             when (cause) {
                 is ConstraintViolationException -> {
                     val detailMessage =
-                        cause.constraintViolations.joinToString("\n") { "[${it.property}] - ${it.constraint.name}${it.constraint.messageParams}" }
-                    call.respondText(
-                        text = "${HttpStatusCode.UnprocessableEntity.value}: $detailMessage",
-                        status = HttpStatusCode.UnprocessableEntity
-                    )
+                        cause.constraintViolations.map { "[${it.property}] - ${it.constraint.name}${it.constraint.messageParams}" }
+                            .toList()
+                    call.respond(ResponseEntity(HttpStatusCode.UnprocessableEntity, detailMessage))
                 }
-                is UnsupportedMediaTypeException -> call.respondText(
-                    text = "${HttpStatusCode.UnsupportedMediaType.value}: $cause",
-                    status = HttpStatusCode.UnsupportedMediaType
+                is UnsupportedMediaTypeException -> call.respond(
+                    ResponseEntity(HttpStatusCode.UnsupportedMediaType, listOf(cause.message.toString()))
                 )
-                is BadRequestException -> call.respondText(
-                    text = "${HttpStatusCode.BadRequest.value}: $cause",
-                    status = HttpStatusCode.BadRequest
+                is BadRequestException -> call.respond(
+                    ResponseEntity(HttpStatusCode.BadRequest, listOf(cause.message.toString()))
                 )
-                is NotFoundException -> call.respondText(
-                    text = "${HttpStatusCode.NotFound.value}: $cause",
-                    status = HttpStatusCode.NotFound
+                is NotFoundException -> call.respond(
+                    ResponseEntity(HttpStatusCode.NotFound, listOf(cause.message.toString()))
                 )
-                else -> call.respondText(
-                    text = "${HttpStatusCode.InternalServerError.value}: $cause",
-                    status = HttpStatusCode.InternalServerError
-                )
+                else -> call.respond(ResponseEntity(HttpStatusCode.InternalServerError, listOf(cause.message.toString())))
             }
         }
     }
+}
+
+private suspend fun ApplicationCall.respond(body: ResponseEntity) {
+    this.respond(body.httpStatus, body)
+}
+
+@Suppress("unused")
+@kotlinx.serialization.Serializable
+class ResponseEntity private constructor(
+    private val timestamp: String,
+    private val status: Int,
+    private val error: String,
+    private val message: List<String>,
+    @kotlinx.serialization.Transient
+    val httpStatus: HttpStatusCode = HttpStatusCode.OK // dummy initialization
+) {
+    constructor(httpStatus: HttpStatusCode, message: List<String>) : this(
+        timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
+        status = httpStatus.value,
+        error = httpStatus.description,
+        message = message,
+        httpStatus = httpStatus
+    )
 }

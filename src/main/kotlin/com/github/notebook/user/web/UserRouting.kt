@@ -15,14 +15,13 @@ fun Route.userRouting() {
 
     route(ROUTING_ROOT) {
         get {
-            call.respond(UserService.getAll())
+            call.respond(HttpStatusCode.OK, UserService.getAll())
         }
 
         get("/{name}") {
             val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
             val user = UserService.get(userName)
-            if (user == null) call.respond(HttpStatusCode.NotFound)
-            else call.respond(user)
+            call.respond(HttpStatusCode.OK, user)
         }
 
         post {
