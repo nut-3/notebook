@@ -1,7 +1,6 @@
 package com.github.notebook.user.web
 
 import com.github.notebook.ServerTest
-import com.github.notebook.user.model.EditUser
 import com.github.notebook.user.model.NewUser
 import com.github.notebook.user.model.Role
 import com.github.notebook.user.model.User
@@ -13,6 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 class UserRoutingKtTest : ServerTest() {
@@ -23,6 +23,8 @@ class UserRoutingKtTest : ServerTest() {
     private val updatedUser = user.toEditUser(email = "user1@test.test", roles = setOf(Role.ADMIN, Role.USER))
     private val deletedUser =
         NewUser("deleted", "deleted", true, "deleted@test.test", "Deleted Deleted", setOf(Role.USER))
+    private val invalidUser = NoValidationUser(name = "1", password = "123", active = true, email = "wrong_at_email", fullName = "Invalid", roles = setOf())
+    private val nonExistentUserName = "nonexistent"
 
     @Test
     fun `Test API get User with name='user'`() {
@@ -69,8 +71,10 @@ class UserRoutingKtTest : ServerTest() {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatusCode.NoContent.value)
         val userInDb = UserService.get(updatedUser.name)
-        assertThat(userInDb).usingRecursiveComparison(RecursiveComparisonConfiguration.builder()
-            .withIgnoreCollectionOrder(true).build()).isEqualTo(updatedUser.toUser())
+        assertThat(userInDb).usingRecursiveComparison(
+            RecursiveComparisonConfiguration.builder()
+                .withIgnoreCollectionOrder(true).build()
+        ).isEqualTo(updatedUser.toUser())
     }
 
     @Test
@@ -85,38 +89,29 @@ class UserRoutingKtTest : ServerTest() {
         assertThat(userInDb).isNull()
     }
 
-    private fun User.toEditUser(
-        name: String = this.name,
-        password: String? = null,
-        active: Boolean = this.active,
-        email: String = this.email,
-        fullName: String? = this.fullName,
-        roles: Set<Role> = this.roles
-    ) = EditUser(
-        this.id,
-        name,
-        password,
-        active,
-        email,
-        fullName,
-        roles
-    )
+    @Nested
+    inner class ErrorTests {
 
-    private fun EditUser.toUser() = User(
-        this.id,
-        this.name,
-        this.active,
-        this.email,
-        this.fullName,
-        this.roles
-    )
+        @Test
+        fun `Test API create invalid user`() {
+            val response = given()
+                .contentType(ContentType.JSON)
+                .body(Json.encodeToString(invalidUser))
+                .`when`()
+                .post(ROUTING_ROOT)
+                .then()
+                .extract()
 
-    private fun NewUser.toUser(id: Int) = User(
-        id,
-        this.name,
-        this.active,
-        this.email,
-        this.fullName,
-        this.roles
-    )
+            assertThat(response.statusCode()).isEqualTo(HttpStatusCode.UnprocessableEntity.value)
+        }
+
+        @Test
+        fun `Test API get nonexistent user`() {
+            val response = get("$ROUTING_ROOT/$nonExistentUserName")
+                .then()
+                .extract()
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatusCode.NotFound.value)
+        }
+    }
 }

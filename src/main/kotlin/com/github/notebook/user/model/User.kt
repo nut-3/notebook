@@ -7,6 +7,11 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.select
+import org.valiktor.functions.hasSize
+import org.valiktor.functions.isEmail
+import org.valiktor.functions.isNotEmpty
+import org.valiktor.functions.isPositive
+import org.valiktor.validate
 
 object Users : IntIdTable("users") {
     val name = varchar("name", 50).uniqueIndex()
@@ -39,7 +44,16 @@ data class NewUser(
     val email: String,
     val fullName: String?,
     val roles: Set<Role> = emptySet()
-)
+) {
+    init {
+        validate(this) {
+            validate(NewUser::name).hasSize(min = 3, max = 50)
+            validate(NewUser::password).hasSize(min = 6, max = 150)
+            validate(NewUser::email).isEmail()
+            validate(NewUser::roles).isNotEmpty()
+        }
+    }
+}
 
 @kotlinx.serialization.Serializable
 data class EditUser(
@@ -50,7 +64,17 @@ data class EditUser(
     val email: String,
     val fullName: String?,
     val roles: Set<Role> = emptySet()
-)
+) {
+    init {
+        validate(this) {
+            validate(EditUser::id).isPositive()
+            validate(EditUser::name).hasSize(min = 3, max = 50)
+            validate(EditUser::password).hasSize(min = 6, max = 150)
+            validate(EditUser::email).isEmail()
+            validate(EditUser::roles).isNotEmpty()
+        }
+    }
+}
 
 enum class Role { USER, ADMIN }
 

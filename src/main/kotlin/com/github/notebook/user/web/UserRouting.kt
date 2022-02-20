@@ -4,6 +4,7 @@ import com.github.notebook.user.model.NewUser
 import com.github.notebook.user.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -18,10 +19,7 @@ fun Route.userRouting() {
         }
 
         get("/{name}") {
-            val userName = call.parameters["name"] ?: return@get call.respondText(
-                "Missing or malformed user name",
-                status = HttpStatusCode.BadRequest
-            )
+            val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
             val user = UserService.get(userName)
             if (user == null) call.respond(HttpStatusCode.NotFound)
             else call.respond(user)
@@ -33,19 +31,13 @@ fun Route.userRouting() {
         }
 
         put("/{name}") {
-            val userName = call.parameters["name"] ?: return@put call.respondText(
-                "Missing or malformed user name",
-                status = HttpStatusCode.BadRequest
-            )
+            val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
             UserService.update(call.receive(), userName)
             call.respond(HttpStatusCode.NoContent)
         }
 
         delete("/{name}") {
-            val userName = call.parameters["name"] ?: return@delete call.respondText(
-                "Missing or malformed user name",
-                status = HttpStatusCode.BadRequest
-            )
+            val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
             UserService.delete(userName)
             call.respond(HttpStatusCode.NoContent)
         }

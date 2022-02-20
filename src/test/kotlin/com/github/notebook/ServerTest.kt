@@ -1,11 +1,10 @@
 package com.github.notebook
 
 import com.github.notebook.common.JsonMapper
-import com.github.notebook.db.DbConfig
 import com.github.notebook.plugins.*
 import com.github.notebook.user.model.Users
+import io.ktor.server.cio.*
 import io.ktor.server.engine.*
-import io.ktor.server.netty.*
 import io.restassured.RestAssured
 import io.restassured.response.ResponseBodyExtractionOptions
 import kotlinx.serialization.decodeFromString
@@ -31,10 +30,12 @@ open class ServerTest {
 
         @BeforeAll
         @JvmStatic
+        @Suppress("unused")
         fun startServer() {
             if (!serverStarted) {
-                server = embeddedServer(Netty, port = 8081, host = "localhost") {
-                    DbConfig.intiDB()
+                server = embeddedServer(CIO, port = 8081, host = "localhost") {
+                    intiDB()
+                    configureStatusPages()
                     configureRouting()
                     configureSerialization()
                     configureMonitoring()
