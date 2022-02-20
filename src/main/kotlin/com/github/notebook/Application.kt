@@ -1,17 +1,5 @@
 package com.github.notebook
 
-import com.github.notebook.db.DbConfig
-import com.github.notebook.plugins.*
-import io.ktor.server.engine.*
-import io.ktor.server.netty.*
+import io.ktor.server.cio.*
 
-fun main() {
-    embeddedServer(Netty, port = 8080, host = "0.0.0.0") {
-        DbConfig.intiDB()
-        configureRouting()
-        configureSerialization()
-        configureMonitoring()
-        configureHTTP()
-        configureSecurity()
-    }.start(wait = true)
-}
+fun main(args: Array<String>): Unit = EngineMain.main(args)

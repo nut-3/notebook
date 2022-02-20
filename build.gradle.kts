@@ -11,7 +11,7 @@ val assertjVersion: String by project
 val mockkVersion: String by project
 val restAssuredVersion: String by project
 val junitVersion: String by project
-val kompendiumVersion: String by project
+val valiktorVersion: String by project
 
 plugins {
     application
@@ -22,7 +22,7 @@ plugins {
 group = "com.github.notebook"
 version = "0.0.1"
 application {
-    mainClass.set("com.github.notebook.ApplicationKt")
+    mainClass.set("io.ktor.server.cio.EngineMain")
 }
 
 repositories {
@@ -33,12 +33,13 @@ repositories {
 dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-cio-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.github.microutils:kotlin-logging-jvm:$loggingVersion")
 
     // https://mvnrepository.com/artifact/com.h2database/h2
@@ -55,13 +56,10 @@ dependencies {
     // Flyway
     implementation("org.flywaydb:flyway-core:$flywayVersion")
 
-    //Kompedium Swagger
-    implementation("io.bkbn:kompendium-core:$kompendiumVersion")
-    implementation("io.bkbn:kompendium-oas:$kompendiumVersion")
-    implementation("io.bkbn:kompendium-swagger-ui:$kompendiumVersion")
+    // Valiktor validation
+    implementation("org.valiktor:valiktor-core:$valiktorVersion")
 
     // Tests
-//    testImplementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
