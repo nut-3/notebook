@@ -22,7 +22,7 @@ object UserService {
         addLogger(Slf4jSqlDebugLogger)
         val newId = Users.insertAndGetId {
             it[name] = user.name
-            it[password] = user.password
+            it[password] = PasswordService.hashPassword(user.password)
             it[active] = user.active
             it[email] = user.email
             it[fullName] = user.fullName
@@ -41,7 +41,7 @@ object UserService {
         if (userName != user.name) throw IllegalArgumentException("Wrong user data")
         val updatedId = Users.select { Users.name eq userName }.single()[Users.id]
         Users.update({ Users.id eq updatedId }) {
-            if (user.password != null) it[password] = user.password
+            if (user.password != null) it[password] = PasswordService.hashPassword(user.password)
             it[active] = user.active
             it[email] = user.email
             it[fullName] = user.fullName

@@ -1,5 +1,6 @@
 package com.github.notebook.plugins
 
+import com.github.notebook.common.ForbiddenException
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
@@ -18,6 +19,11 @@ fun Application.configureStatusPages() {
                             .toList()
                     call.respond(ResponseEntity(HttpStatusCode.UnprocessableEntity, detailMessage))
                 }
+                is ForbiddenException -> call.respond(
+                    ResponseEntity(
+                        cause.httpStatus, listOf(cause.message.toString())
+                    )
+                )
                 is UnsupportedMediaTypeException -> call.respond(
                     ResponseEntity(HttpStatusCode.UnsupportedMediaType, listOf(cause.message.toString()))
                 )
@@ -27,7 +33,12 @@ fun Application.configureStatusPages() {
                 is NotFoundException -> call.respond(
                     ResponseEntity(HttpStatusCode.NotFound, listOf(cause.message.toString()))
                 )
-                else -> call.respond(ResponseEntity(HttpStatusCode.InternalServerError, listOf(cause.message.toString())))
+                else -> call.respond(
+                    ResponseEntity(
+                        HttpStatusCode.InternalServerError,
+                        listOf(cause.message.toString())
+                    )
+                )
             }
         }
     }
@@ -44,14 +55,16 @@ class ResponseEntity private constructor(
     private val status: Int,
     private val error: String,
     private val message: List<String>,
-    @kotlinx.serialization.Transient
-    val httpStatus: HttpStatusCode = HttpStatusCode.OK // dummy initialization
 ) {
     constructor(httpStatus: HttpStatusCode, message: List<String>) : this(
         timestamp = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME),
         status = httpStatus.value,
         error = httpStatus.description,
-        message = message,
-        httpStatus = httpStatus
-    )
+        message = message
+    ) {
+        this.httpStatus = httpStatus
+    }
+
+    @kotlinx.serialization.Transient
+    lateinit var httpStatus: HttpStatusCode
 }

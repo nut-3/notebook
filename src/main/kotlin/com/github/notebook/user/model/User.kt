@@ -15,7 +15,7 @@ import org.valiktor.validate
 
 object Users : IntIdTable("users") {
     val name = varchar("name", 50).uniqueIndex()
-    val password = varchar("password", 150)
+    val password = varchar("password", 255)
     val active = bool("active").default(true)
     val email = varchar("email", 100).uniqueIndex()
     val fullName = varchar("full_name", 200).nullable()
@@ -48,7 +48,7 @@ data class NewUser(
     init {
         validate(this) {
             validate(NewUser::name).hasSize(min = 3, max = 50)
-            validate(NewUser::password).hasSize(min = 6, max = 150)
+            validate(NewUser::password).hasSize(min = 6, max = 255)
             validate(NewUser::email).isEmail()
             validate(NewUser::roles).isNotEmpty()
         }
@@ -69,7 +69,7 @@ data class EditUser(
         validate(this) {
             validate(EditUser::id).isPositive()
             validate(EditUser::name).hasSize(min = 3, max = 50)
-            validate(EditUser::password).hasSize(min = 6, max = 150)
+            if (password != null) validate(EditUser::password).hasSize(min = 6, max = 255)
             validate(EditUser::email).isEmail()
             validate(EditUser::roles).isNotEmpty()
         }

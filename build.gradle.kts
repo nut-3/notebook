@@ -12,6 +12,7 @@ val mockkVersion: String by project
 val restAssuredVersion: String by project
 val junitVersion: String by project
 val valiktorVersion: String by project
+val bcryptVersion: String by project
 
 plugins {
     application
@@ -38,9 +39,12 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
     implementation("io.github.microutils:kotlin-logging-jvm:$loggingVersion")
+    implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+    implementation("at.favre.lib:bcrypt:$bcryptVersion")
 
     // https://mvnrepository.com/artifact/com.h2database/h2
     implementation("com.h2database:h2:$h2Version")
@@ -58,12 +62,14 @@ dependencies {
 
     // Valiktor validation
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
+    implementation("io.ktor:ktor-server-sessions-jvm:2.0.0-beta-1")
 
     // Tests
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
     testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
     testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }

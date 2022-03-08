@@ -15,7 +15,7 @@ import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguratio
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class UserRoutingKtTest : ServerTest() {
+class UserAdminRoutingKtTest : ServerTest() {
 
     private val user = User(1, "user", true, "user@test.test", "User User", setOf(Role.USER))
     private val admin = User(2, "admin", true, "admin@test.test", "Admin Admin", setOf(Role.USER, Role.ADMIN))
@@ -23,12 +23,19 @@ class UserRoutingKtTest : ServerTest() {
     private val updatedUser = user.toEditUser(email = "user1@test.test", roles = setOf(Role.ADMIN, Role.USER))
     private val deletedUser =
         NewUser("deleted", "deleted", true, "deleted@test.test", "Deleted Deleted", setOf(Role.USER))
-    private val invalidUser = NoValidationUser(name = "1", password = "123", active = true, email = "wrong_at_email", fullName = "Invalid", roles = setOf())
+    private val invalidUser = NoValidationUser(
+        name = "1",
+        password = "123",
+        active = true,
+        email = "wrong_at_email",
+        fullName = "Invalid",
+        roles = setOf()
+    )
     private val nonExistentUserName = "nonexistent"
 
     @Test
     fun `Test API get User with name='user'`() {
-        val response = get("$ROUTING_ROOT/${user.name}")
+        val response = get("${UserAdminRouting().root}/${user.name}")
             .then()
             .extract()
 
@@ -38,7 +45,7 @@ class UserRoutingKtTest : ServerTest() {
 
     @Test
     fun `Test API get all Users`() {
-        val response = get(ROUTING_ROOT)
+        val response = get(UserAdminRouting().root)
             .then()
             .extract()
         assertThat(response.statusCode()).isEqualTo(HttpStatusCode.OK.value)
@@ -51,7 +58,7 @@ class UserRoutingKtTest : ServerTest() {
             .contentType(ContentType.JSON)
             .body(Json.encodeToString(newUser))
             .`when`()
-            .post(ROUTING_ROOT)
+            .post(UserAdminRouting().root)
             .then()
             .extract()
         assertThat(response.statusCode()).isEqualTo(HttpStatusCode.Created.value)
@@ -65,7 +72,7 @@ class UserRoutingKtTest : ServerTest() {
             .contentType(ContentType.JSON)
             .body(Json.encodeToString(updatedUser))
             .`when`()
-            .put("$ROUTING_ROOT/${user.name}")
+            .put("${UserAdminRouting().root}/${user.name}")
             .then()
             .extract()
 
@@ -80,7 +87,7 @@ class UserRoutingKtTest : ServerTest() {
     @Test
     fun `Test API delete existing user`() {
         val userToDelete = UserService.create(deletedUser)
-        val response = delete("$ROUTING_ROOT/${userToDelete.name}")
+        val response = delete("${UserAdminRouting().root}/${userToDelete.name}")
             .then()
             .extract()
 
@@ -98,7 +105,7 @@ class UserRoutingKtTest : ServerTest() {
                 .contentType(ContentType.JSON)
                 .body(Json.encodeToString(invalidUser))
                 .`when`()
-                .post(ROUTING_ROOT)
+                .post(UserAdminRouting().root)
                 .then()
                 .extract()
 
@@ -107,7 +114,7 @@ class UserRoutingKtTest : ServerTest() {
 
         @Test
         fun `Test API get nonexistent user`() {
-            val response = get("$ROUTING_ROOT/$nonExistentUserName")
+            val response = get("${UserAdminRouting().root}/$nonExistentUserName")
                 .then()
                 .extract()
 

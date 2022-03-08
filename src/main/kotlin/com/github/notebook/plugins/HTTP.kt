@@ -10,8 +10,9 @@ fun Application.configureHTTP() {
         method(HttpMethod.Put)
         method(HttpMethod.Delete)
         method(HttpMethod.Patch)
-        header(HttpHeaders.Authorization)
-        hostIsIp("127.0.0.1")
+//        header(HttpHeaders.Authorization)
+        anyHost()
+//        hostIsIp("127.0.0.1")
     }
 
 }
