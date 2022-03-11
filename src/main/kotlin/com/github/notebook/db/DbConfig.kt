@@ -19,17 +19,27 @@ object DbConfig {
 
     internal fun getHikariDS() = HikariDataSource(HikariConfig("/hikari.properties"))
 
+    private fun flyway(dataSource: DataSource) = Flyway.configure()
+        .dataSource(dataSource)
+        .locations(Location("classpath:**/db/migration"))
+        .load()
+
     internal fun initFlyway(dataSource: DataSource) {
         log.info { "Initiate flyway migration" }
-        val flyway = Flyway.configure()
-            .dataSource(dataSource)
-            .locations(Location("classpath:**/db/migration"))
-            .load()
         try {
-//            flyway.info()
-            flyway.migrate()
+            flyway(dataSource).migrate()
         } catch (e: FlywayException) {
-            log.error { "Exception running flyway migration" }
+            log.error { "Error running flyway migration" }
+            throw e
+        }
+    }
+
+    fun cleanSchema(dataSource: DataSource) {
+        log.info { "Initiate clean schema" }
+        try {
+            flyway(dataSource).clean()
+        } catch (e: FlywayException) {
+            log.error { "Error cleaning schema" }
             throw e
         }
     }

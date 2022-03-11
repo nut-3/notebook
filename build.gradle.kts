@@ -9,7 +9,6 @@ val flywayVersion: String by project
 val loggingVersion: String by project
 val assertjVersion: String by project
 val mockkVersion: String by project
-val restAssuredVersion: String by project
 val junitVersion: String by project
 val valiktorVersion: String by project
 val bcryptVersion: String by project
@@ -62,14 +61,12 @@ dependencies {
 
     // Valiktor validation
     implementation("org.valiktor:valiktor-core:$valiktorVersion")
-    implementation("io.ktor:ktor-server-sessions-jvm:2.0.0-beta-1")
 
     // Tests
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("io.rest-assured:rest-assured:$restAssuredVersion")
-    testImplementation("io.ktor:ktor-client-cio:$ktorVersion")
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
 }

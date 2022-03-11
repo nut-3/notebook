@@ -22,7 +22,7 @@ const val LOGIN_AUTH = "auth-form"
 fun Application.configureSecurity() {
 
     // set environment for JWT generation and verification
-    JwtService.setEnvironment(environment)
+    JwtService.setConfig(environment.config)
 
     install(Authentication) {
         form(name = LOGIN_AUTH) {

@@ -4,10 +4,10 @@ import com.github.notebook.db.DbConfig
 import io.ktor.server.application.*
 import org.jetbrains.exposed.sql.Database
 
-fun Application.intiDB(enableTCP: Boolean = true) {
+fun Application.intiDB() {
     log.info("Initiate database")
     val dataSource = DbConfig.getHikariDS()
     Database.connect(dataSource)
-    if (enableTCP) DbConfig.initTcpServer()
+    DbConfig.initTcpServer()
     DbConfig.initFlyway(dataSource)
 }

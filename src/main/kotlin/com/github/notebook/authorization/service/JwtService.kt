@@ -3,7 +3,7 @@ package com.github.notebook.authorization.service
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.server.application.*
+import io.ktor.server.config.*
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -30,11 +30,11 @@ object JwtService {
         .withIssuer(issuer)
         .build()
 
-    fun setEnvironment(environment: ApplicationEnvironment) {
-        issuer = environment.config.property("jwt.issuer").getString()
-        audience = environment.config.property("jwt.audience").getString()
-        myRealm = environment.config.property("jwt.realm").getString()
-        expire = environment.config.property("jwt.expire").getString().toLong()
-        secret = environment.config.property("jwt.secret").getString()
+    fun setConfig(config: ApplicationConfig) {
+        issuer = config.property("jwt.issuer").getString()
+        audience = config.property("jwt.audience").getString()
+        myRealm = config.property("jwt.realm").getString()
+        expire = config.property("jwt.expire").getString().toLong()
+        secret = config.property("jwt.secret").getString()
     }
 }

@@ -1,4 +1,4 @@
-package com.github.notebook.user.web
+package com.github.notebook.user
 
 import com.github.notebook.user.model.EditUser
 import com.github.notebook.user.model.NewUser
@@ -13,10 +13,10 @@ data class NoValidationUser(
     val active: Boolean? = null,
     val email: String? = null,
     val fullName: String? = null,
-    val roles: Set<Role>? = emptySet()
+    val roles: Set<Role> = emptySet()
 )
 
-internal fun User.toEditUser(
+fun User.toEditUser(
     name: String = this.name,
     password: String? = null,
     active: Boolean = this.active,
@@ -33,7 +33,7 @@ internal fun User.toEditUser(
     roles
 )
 
-internal fun EditUser.toUser() = User(
+fun EditUser.toUser() = User(
     this.id,
     this.name,
     this.active,
@@ -42,7 +42,7 @@ internal fun EditUser.toUser() = User(
     this.roles
 )
 
-internal fun NewUser.toUser(id: Int) = User(
+fun NewUser.toUser(id: Int) = User(
     id,
     this.name,
     this.active,

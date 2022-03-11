@@ -1,61 +1,63 @@
 package com.github.notebook
 
-import com.github.notebook.common.JsonMapper
-import com.github.notebook.plugins.*
-import com.github.notebook.user.model.Users
-import io.ktor.server.cio.*
-import io.ktor.server.engine.*
-import io.restassured.RestAssured
-import io.restassured.response.ResponseBodyExtractionOptions
-import kotlinx.serialization.decodeFromString
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
+import com.github.notebook.authorization.service.JwtService
+import com.github.notebook.db.DbConfig
+import com.github.notebook.user.model.Role
+import io.ktor.client.*
+import io.ktor.server.config.*
+import io.ktor.server.testing.*
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
-import java.util.concurrent.TimeUnit
 
 
-//https://github.com/raharrison/kotlin-ktor-exposed-starter/blob/master/src/test/kotlin/common/ServerTest.kt
 open class ServerTest {
-
-    protected inline fun <reified T> ResponseBodyExtractionOptions.to(): T {
-        return JsonMapper.decodeFromString(this.asString())
-    }
 
     companion object {
 
-        private var serverStarted = false
-
-        private lateinit var server: ApplicationEngine
+        private lateinit var unitTestApplication: TestApplication
+        lateinit var adminJWT: String
+        lateinit var userJWT: String
+        lateinit var client: HttpClient
 
         @BeforeAll
         @JvmStatic
         @Suppress("unused")
-        fun startServer() {
-            if (!serverStarted) {
-                server = embeddedServer(CIO, port = 8081, host = "localhost") {
-                    intiDB()
-                    configureStatusPages()
-                    configureRouting()
-                    configureSerialization()
-                    configureMonitoring()
-                    configureHTTP()
-                    configureSecurity()
+        private fun initTests() {
+            val testConfig = ApplicationConfig("application.conf")
+            JwtService.setConfig(testConfig)
+            adminJWT = JwtService.generateJwt("admin", listOf(Role.ADMIN.name, Role.USER.name))
+            userJWT = JwtService.generateJwt("user", listOf(Role.USER.name))
+            unitTestApplication = TestApplication {
+                environment {
+                    config = testConfig
                 }
-                server.start()
-                serverStarted = true
-
-                RestAssured.baseURI = "http://localhost"
-                RestAssured.port = 8081
-                Runtime.getRuntime().addShutdownHook(Thread { server.stop(0, 0, TimeUnit.SECONDS) })
             }
+            client = unitTestApplication.client.config {
+                expectSuccess = false
+            }
+        }
+
+        @AfterAll
+        @JvmStatic
+        @Suppress("unused")
+        fun stopApp() {
+            unitTestApplication.stop()
         }
     }
 
     @AfterEach
-    fun deleteUsers() {
-        transaction {
-            Users.deleteWhere { (Users.id.notInList(listOf(1, 2))) }
-        }
+    fun refreshSchema() {
+        val dataSource = DbConfig.getHikariDS()
+        DbConfig.cleanSchema(dataSource)
+        DbConfig.initFlyway(dataSource)
+    }
+
+    @Suppress("UNUSED_EXPRESSION")
+    fun runTest(
+        block: suspend ServerTest.() -> Unit
+    ) {
+        runBlocking { block() }
     }
 }
