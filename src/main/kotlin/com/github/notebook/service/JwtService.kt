@@ -1,4 +1,4 @@
-package com.github.notebook.authorization.service
+package com.github.notebook.service
 
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier

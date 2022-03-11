@@ -1,27 +1,23 @@
 package com.github.notebook.plugins
 
-import com.github.notebook.authorization.service.JwtService
 import com.github.notebook.common.ForbiddenException
-import com.github.notebook.user.model.Role
-import com.github.notebook.user.model.Users
-import com.github.notebook.user.model.Users.active
-import com.github.notebook.user.model.Users.password
-import com.github.notebook.user.service.PasswordService
+import com.github.notebook.model.Role
+import com.github.notebook.model.Users.active
+import com.github.notebook.model.Users.password
+import com.github.notebook.service.JwtService
+import com.github.notebook.service.PasswordService
+import com.github.notebook.service.UserService
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.routing.*
-import org.jetbrains.exposed.sql.Slf4jSqlDebugLogger
-import org.jetbrains.exposed.sql.addLogger
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 const val API_AUTH = "auth-jwt"
 const val LOGIN_AUTH = "auth-form"
 
 fun Application.configureSecurity() {
 
-    // set environment for JWT generation and verification
+    // set environment config for JWT generation and verification
     JwtService.setConfig(environment.config)
 
     install(Authentication) {
@@ -31,11 +27,7 @@ fun Application.configureSecurity() {
             validate { credentials ->
                 val userName = credentials.name
                 log.info("Auth {}", userName)
-                val result = transaction {
-                    addLogger(Slf4jSqlDebugLogger)
-                    Users.slice(active, password).select { (Users.name eq userName) }.singleOrNull()
-                        ?: throw ForbiddenException("User with name=$userName not found")
-                }
+                val result = UserService.getUserStatus(userName)
                 if (!result[active]) throw ForbiddenException("User $userName is inactive")
                 if (PasswordService.verifyPassword(credentials.password, result[password])) {
                     UserIdPrincipal(userName)

@@ -1,10 +1,10 @@
-package com.github.notebook.user.web
+package com.github.notebook.web.user
 
+import com.github.notebook.model.NewUser
+import com.github.notebook.model.Role
 import com.github.notebook.plugins.API_AUTH
 import com.github.notebook.plugins.withRole
-import com.github.notebook.user.model.NewUser
-import com.github.notebook.user.model.Role
-import com.github.notebook.user.service.UserService
+import com.github.notebook.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

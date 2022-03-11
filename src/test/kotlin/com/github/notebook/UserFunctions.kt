@@ -1,9 +1,9 @@
-package com.github.notebook.user
+package com.github.notebook
 
-import com.github.notebook.user.model.EditUser
-import com.github.notebook.user.model.NewUser
-import com.github.notebook.user.model.Role
-import com.github.notebook.user.model.User
+import com.github.notebook.model.EditUser
+import com.github.notebook.model.NewUser
+import com.github.notebook.model.Role
+import com.github.notebook.model.User
 
 @kotlinx.serialization.Serializable
 data class NoValidationUser(

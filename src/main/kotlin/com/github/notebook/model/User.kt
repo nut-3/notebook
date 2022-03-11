@@ -1,6 +1,6 @@
-package com.github.notebook.user.model
+package com.github.notebook.model
 
-import com.github.notebook.user.model.UserRoles.role
+import com.github.notebook.model.UserRoles.role
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.ResultRow

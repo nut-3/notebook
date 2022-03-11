@@ -65,7 +65,8 @@ dependencies {
     // Tests
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-    testImplementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
+//    testImplementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
+//    testImplementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

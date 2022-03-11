@@ -1,8 +1,8 @@
-package com.github.notebook.user
+package com.github.notebook
 
-import com.github.notebook.user.model.NewUser
-import com.github.notebook.user.model.Role
-import com.github.notebook.user.model.User
+import com.github.notebook.model.NewUser
+import com.github.notebook.model.Role
+import com.github.notebook.model.User
 
 val user = User(1, "user", true, "user@test.test", "User User", setOf(Role.USER))
 val admin = User(2, "admin", true, "admin@test.test", "Admin Admin", setOf(Role.USER, Role.ADMIN))
@@ -16,4 +16,5 @@ val invalidUser = NoValidationUser(
     fullName = "Invalid",
     roles = setOf()
 )
-val nonExistentUserName = "nonexistent"
+const val NON_EXISTENT_USER_NAME = "nonexistent"
+const val USER_PASSWORD = "password"

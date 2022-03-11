@@ -1,17 +1,14 @@
-package com.github.notebook.user.web
+package com.github.notebook.web.user
 
-import com.github.notebook.ServerTest
-import com.github.notebook.common.JsonMapper
+import com.github.notebook.*
 import com.github.notebook.common.deSerialize
 import com.github.notebook.common.serialize
-import com.github.notebook.user.*
-import com.github.notebook.user.model.User
-import com.github.notebook.user.service.UserService
+import com.github.notebook.model.User
+import com.github.notebook.service.UserService
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.plugins.*
-import kotlinx.serialization.decodeFromString
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
@@ -22,7 +19,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
 
 
     @Test
-    fun `Test API get User with name='user'`(): Unit = runTest {
+    fun `Test API get User with name='user'`() = runTest {
 
         client.get("${UserAdminRouting().root}/${user.name}") {
             bearerAuth(adminJWT)
@@ -33,20 +30,20 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     }
 
     @Test
-    fun `Test API get all Users`(): Unit = runTest {
+    fun `Test API get all Users`() = runTest {
 
         client.get(UserAdminRouting().root) {
             bearerAuth(adminJWT)
         }.apply {
 
             assertThat(this.status).isEqualTo(HttpStatusCode.OK)
-            assertThat(JsonMapper.decodeFromString<List<User>>(this.bodyAsText())).usingRecursiveComparison()
+            assertThat(deSerialize<List<User>>(this.bodyAsText())).usingRecursiveComparison()
                 .isEqualTo(listOf(user, admin))
         }
     }
 
     @Test
-    fun `Test API create new user`(): Unit = runTest {
+    fun `Test API create new user`() = runTest {
 
         client.post(UserAdminRouting().root) {
             bearerAuth(adminJWT)
@@ -60,7 +57,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     }
 
     @Test
-    fun `Test API edit existing user`(): Unit = runTest {
+    fun `Test API edit existing user`() = runTest {
 
         client.put("${UserAdminRouting().root}/${user.name}") {
             bearerAuth(adminJWT)
@@ -76,7 +73,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     }
 
     @Test
-    fun `Test API delete existing user`(): Unit = runTest {
+    fun `Test API delete existing user`() = runTest {
 
         client.delete("${UserAdminRouting().root}/${user.name}") {
             bearerAuth(adminJWT)
@@ -90,7 +87,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     inner class ErrorTests {
 
         @Test
-        fun `Test API create invalid user`(): Unit = runTest {
+        fun `Test API create invalid user`() = runTest {
 
             client.post(UserAdminRouting().root) {
                 bearerAuth(adminJWT)
@@ -102,9 +99,9 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         }
 
         @Test
-        fun `Test API get nonexistent user`(): Unit = runTest {
+        fun `Test API get nonexistent user`() = runTest {
 
-            client.get("${UserAdminRouting().root}/$nonExistentUserName") {
+            client.get("${UserAdminRouting().root}/$NON_EXISTENT_USER_NAME") {
                 bearerAuth(adminJWT)
             }.apply {
                 assertThat(this.status).isEqualTo(HttpStatusCode.NotFound)
@@ -112,7 +109,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         }
 
         @Test
-        fun `Test API get users without ADMIN role`(): Unit = runTest {
+        fun `Test API get users without ADMIN role`() = runTest {
 
             client.get(UserAdminRouting().root) {
                 bearerAuth(userJWT)

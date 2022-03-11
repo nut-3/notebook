@@ -1,8 +1,8 @@
-package com.github.notebook.authorization.web
+package com.github.notebook.web.auth
 
-import com.github.notebook.authorization.service.JwtService
 import com.github.notebook.plugins.LOGIN_AUTH
-import com.github.notebook.user.service.UserService
+import com.github.notebook.service.JwtService
+import com.github.notebook.service.UserService
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.html.*
@@ -11,7 +11,7 @@ import io.ktor.server.routing.*
 import kotlinx.html.*
 
 @JvmInline
-value class AuthRouting(val root: String = "/")
+value class AuthRouting(val root: String = "")
 
 fun Route.authRouting() {
 

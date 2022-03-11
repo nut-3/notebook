@@ -1,6 +1,7 @@
-package com.github.notebook.user.service
+package com.github.notebook.service
 
-import com.github.notebook.user.model.*
+import com.github.notebook.common.ForbiddenException
+import com.github.notebook.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -62,6 +63,12 @@ object UserService {
         addLogger(Slf4jSqlDebugLogger)
         val num = Users.deleteWhere { Users.name eq userName }
         if (num == 0) throw NotFoundException("User with name=$userName not found")
+    }
+
+    fun getUserStatus(userName: String) = transaction {
+        addLogger(Slf4jSqlDebugLogger)
+        Users.slice(Users.active, Users.password).select { (Users.name eq userName) }.singleOrNull()
+            ?: throw ForbiddenException("User with name=$userName not found")
     }
 
     private fun getById(userId: Int): User =

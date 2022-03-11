@@ -1,8 +1,8 @@
 package com.github.notebook.plugins
 
-import com.github.notebook.authorization.web.authRouting
-import com.github.notebook.user.web.userAdminRouting
-import com.github.notebook.user.web.userRouting
+import com.github.notebook.web.auth.authRouting
+import com.github.notebook.web.user.userAdminRouting
+import com.github.notebook.web.user.userRouting
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 

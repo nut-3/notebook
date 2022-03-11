@@ -1,4 +1,4 @@
-package com.github.notebook.user.service
+package com.github.notebook.service
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 import io.ktor.util.*

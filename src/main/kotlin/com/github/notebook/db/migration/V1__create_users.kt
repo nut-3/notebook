@@ -1,9 +1,9 @@
 package com.github.notebook.db.migration
 
-import com.github.notebook.user.model.Role
-import com.github.notebook.user.model.UserRoles
-import com.github.notebook.user.model.Users
-import com.github.notebook.user.service.PasswordService
+import com.github.notebook.model.Role
+import com.github.notebook.model.UserRoles
+import com.github.notebook.model.Users
+import com.github.notebook.service.PasswordService
 import org.flywaydb.core.api.migration.BaseJavaMigration
 import org.flywaydb.core.api.migration.Context
 import org.jetbrains.exposed.sql.SchemaUtils
