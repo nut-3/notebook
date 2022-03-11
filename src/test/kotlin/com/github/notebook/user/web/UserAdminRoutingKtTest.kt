@@ -18,7 +18,7 @@ import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguratio
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-class UserAdminRoutingKtTest : ServerTest() {
+internal class UserAdminRoutingKtTest : ServerTest() {
 
 
     @Test

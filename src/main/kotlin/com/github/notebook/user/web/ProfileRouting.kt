@@ -1,6 +1,8 @@
 package com.github.notebook.user.web
 
 import com.github.notebook.plugins.API_AUTH
+import com.github.notebook.plugins.withRole
+import com.github.notebook.user.model.Role
 import com.github.notebook.user.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -15,17 +17,19 @@ value class ProfileRouting(val root: String = "/api/profile")
 
 fun Route.userRouting() {
     authenticate(API_AUTH) {
-        route(ProfileRouting().root) {
-            get {
-                val principal = call.authentication.principal<JWTPrincipal>()!!
-                val user = UserService.get(principal["username"]!!)
-                call.respond(HttpStatusCode.OK, user)
-            }
+        withRole(Role.USER) {
+            route(ProfileRouting().root) {
+                get {
+                    val principal = call.authentication.principal<JWTPrincipal>()!!
+                    val user = UserService.get(principal["username"]!!)
+                    call.respond(HttpStatusCode.OK, user)
+                }
 
-            put {
-                val principal = call.authentication.principal<JWTPrincipal>()!!
-                UserService.update(call.receive(), principal["username"]!!)
-                call.respond(HttpStatusCode.NoContent)
+                put {
+                    val principal = call.authentication.principal<JWTPrincipal>()!!
+                    UserService.update(call.receive(), principal["username"]!!)
+                    call.respond(HttpStatusCode.NoContent)
+                }
             }
         }
     }
