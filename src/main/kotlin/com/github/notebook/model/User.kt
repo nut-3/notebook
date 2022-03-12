@@ -24,6 +24,10 @@ object Users : IntIdTable("users") {
 object UserRoles : Table("user_roles") {
     val userId = reference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
     val role = enumerationByName("role", 10, Role::class)
+
+    init {
+        uniqueIndex(userId, role)
+    }
 }
 
 @kotlinx.serialization.Serializable

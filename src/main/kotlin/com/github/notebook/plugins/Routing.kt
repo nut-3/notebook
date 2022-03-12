@@ -1,6 +1,7 @@
 package com.github.notebook.plugins
 
 import com.github.notebook.web.auth.authRouting
+import com.github.notebook.web.notebook.notebookRouting
 import com.github.notebook.web.user.userAdminRouting
 import com.github.notebook.web.user.userRouting
 import io.ktor.server.application.*
@@ -12,5 +13,6 @@ fun Application.configureRouting() {
         authRouting()
         userRouting()
         userAdminRouting()
+        notebookRouting()
     }
 }

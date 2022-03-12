@@ -3,6 +3,7 @@ package com.github.notebook.service
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
+import com.github.notebook.model.User
 import io.ktor.server.config.*
 import java.util.*
 import kotlin.properties.Delegates
@@ -16,11 +17,12 @@ object JwtService {
     private lateinit var myRealm: String
     private var expire by Delegates.notNull<Long>()
 
-    fun generateJwt(userName: String, roles: List<String>): String = JWT.create()
+    fun generateJwt(user: User): String = JWT.create()
         .withAudience(audience)
         .withIssuer(issuer)
-        .withClaim("username", userName)
-        .withClaim("roles", roles)
+        .withClaim("userId", user.id)
+        .withClaim("userName", user.name)
+        .withClaim("roles", user.roles.map { it.name })
         .withExpiresAt(Date(System.currentTimeMillis() + expire * 1000))
         .sign(Algorithm.HMAC256(secret))
 

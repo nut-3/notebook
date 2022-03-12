@@ -13,18 +13,19 @@ import kotlinx.html.*
 @JvmInline
 value class AuthRouting(val root: String = "")
 
-fun Route.authRouting() {
+fun Route.authRouting(root: String = AuthRouting().root) {
 
     authenticate(LOGIN_AUTH) {
-        post("${AuthRouting().root}/login") {
+        post("$root/login") {
             val userName = call.principal<UserIdPrincipal>()!!.name
-            val jwtToken = JwtService.generateJwt(userName, UserService.get(userName).roles.map { it.name })
+            val user = UserService.get(userName)
+            val jwtToken = JwtService.generateJwt(user)
             call.respondText("Hello, $userName!\n" +
                     "You JWT Token: $jwtToken")
         }
     }
 
-    get(AuthRouting().root) {
+    get(root) {
         call.respondHtml {
             body {
                 form(

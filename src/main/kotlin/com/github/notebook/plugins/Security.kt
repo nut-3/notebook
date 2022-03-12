@@ -42,7 +42,7 @@ fun Application.configureSecurity() {
             verifier(JwtService.getVerifier())
 
             validate { credential ->
-                if (credential.payload.getClaim("username").asString() != "") {
+                if (credential.payload.getClaim("userName").asString() != "") {
                     JWTPrincipal(credential.payload)
                 } else {
                     null

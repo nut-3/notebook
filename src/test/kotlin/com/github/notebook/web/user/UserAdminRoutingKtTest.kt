@@ -11,12 +11,10 @@ import io.ktor.http.*
 import io.ktor.server.plugins.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatExceptionOfType
-import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
 internal class UserAdminRoutingKtTest : ServerTest() {
-
 
     @Test
     fun `Test API get User with name='user'`() = runTest {
@@ -25,7 +23,8 @@ internal class UserAdminRoutingKtTest : ServerTest() {
             bearerAuth(adminJWT)
         }.apply {
             assertThat(this.status).isEqualTo(HttpStatusCode.OK)
-            assertThat(deSerialize<User>(this.bodyAsText())).usingRecursiveComparison().isEqualTo(user)
+            assertThat(deSerialize<User>(this.bodyAsText())).usingRecursiveComparison(comparisonConfiguration)
+                .isEqualTo(user)
         }
     }
 
@@ -37,7 +36,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         }.apply {
 
             assertThat(this.status).isEqualTo(HttpStatusCode.OK)
-            assertThat(deSerialize<List<User>>(this.bodyAsText())).usingRecursiveComparison()
+            assertThat(deSerialize<List<User>>(this.bodyAsText())).usingRecursiveComparison(comparisonConfiguration)
                 .isEqualTo(listOf(user, admin))
         }
     }
@@ -52,7 +51,8 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         }.apply {
             assertThat(this.status).isEqualTo(HttpStatusCode.Created)
             val userFromRequest = deSerialize<User>(this.bodyAsText())
-            assertThat(userFromRequest).usingRecursiveComparison().isEqualTo(newUser.toUser(userFromRequest.id))
+            assertThat(userFromRequest).usingRecursiveComparison(comparisonConfiguration)
+                .isEqualTo(newUser.toUser(userFromRequest.id))
         }
     }
 
@@ -66,9 +66,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         }.apply {
             assertThat(this.status).isEqualTo(HttpStatusCode.NoContent)
             val userInDb = UserService.get(updatedUser.name)
-            assertThat(userInDb).usingRecursiveComparison(
-                RecursiveComparisonConfiguration.builder().withIgnoreCollectionOrder(true).build()
-            ).isEqualTo(updatedUser.toUser())
+            assertThat(userInDb).usingRecursiveComparison(comparisonConfiguration).isEqualTo(updatedUser.toUser())
         }
     }
 

@@ -1,11 +1,11 @@
 package com.github.notebook
 
 import com.github.notebook.db.DbConfig
-import com.github.notebook.model.Role
 import com.github.notebook.service.JwtService
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 
@@ -19,6 +19,8 @@ open class ServerTest {
             environment { config = testConfig }
         }
         val client = unitTestApplication.createClient { expectSuccess = false }
+        internal val comparisonConfiguration =
+            RecursiveComparisonConfiguration.builder().withIgnoreCollectionOrder(true).build()!!
         lateinit var adminJWT: String
         lateinit var userJWT: String
 
@@ -28,8 +30,8 @@ open class ServerTest {
         @Suppress("unused")
         private fun initTests() {
             JwtService.setConfig(testConfig)
-            adminJWT = JwtService.generateJwt("admin", listOf(Role.ADMIN.name, Role.USER.name))
-            userJWT = JwtService.generateJwt("user", listOf(Role.USER.name))
+            adminJWT = JwtService.generateJwt(admin)
+            userJWT = JwtService.generateJwt(user)
         }
     }
 

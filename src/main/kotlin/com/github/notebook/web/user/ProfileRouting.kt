@@ -21,13 +21,13 @@ fun Route.userRouting() {
             route(ProfileRouting().root) {
                 get {
                     val principal = call.authentication.principal<JWTPrincipal>()!!
-                    val user = UserService.get(principal["username"]!!)
+                    val user = UserService.get(principal["userName"]!!)
                     call.respond(HttpStatusCode.OK, user)
                 }
 
                 put {
                     val principal = call.authentication.principal<JWTPrincipal>()!!
-                    UserService.update(call.receive(), principal["username"]!!)
+                    UserService.update(call.receive(), principal["userName"]!!)
                     call.respond(HttpStatusCode.NoContent)
                 }
             }

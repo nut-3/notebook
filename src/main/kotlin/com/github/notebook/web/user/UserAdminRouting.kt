@@ -17,11 +17,8 @@ import io.ktor.server.routing.*
 value class UserAdminRouting(val root: String = "/api/admin/users")
 
 fun Route.userAdminRouting() {
-
     authenticate(API_AUTH) {
-
         withRole(Role.ADMIN) {
-
             route(UserAdminRouting().root) {
                 get {
                     call.respond(HttpStatusCode.OK, UserService.getAll())
