@@ -1,0 +1,31 @@
+# https://docs.travis-ci.com/user/languages/java/
+language: java
+jdk: openjdk17
+
+# https://docs.travis-ci.com/user/languages/java/#caching
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+# https://dzone.com/articles/travis-ci-tutorial-java-projects
+cache:
+  directories:
+    - $HOME/.m2
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+
+# https://docs.travis-ci.com/user/customizing-the-build#Building-Specific-Branches
+branches:
+  only:
+    - main
+
+before_install:
+  - chmod +x gradlew
+  - chmod +x gradle/wrapper/gradle-wrapper.jar
+
+# https://docs.travis-ci.com/user/notifications#Configuring-email-notifications
+notifications:
+  email: false
+
+script:
+  - ./gradlew test build
