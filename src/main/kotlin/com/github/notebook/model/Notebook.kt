@@ -2,7 +2,7 @@
 
 package com.github.notebook.model
 
-import com.github.notebook.plugins.LocalDateTimeAsStringSerializer
+import com.github.notebook.common.LocalDateTimeAsStringSerializer
 import com.github.notebook.service.UserService
 import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.dao.id.IntIdTable
