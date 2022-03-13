@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class V2__create_notebooks : BaseJavaMigration() {
+class V2__create_notebooks_and_notes : BaseJavaMigration() {
     override fun migrate(context: Context?) {
         transaction {
             SchemaUtils.create(Notebooks, Notes)
