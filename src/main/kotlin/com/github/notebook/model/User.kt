@@ -1,6 +1,7 @@
 package com.github.notebook.model
 
 import com.github.notebook.model.UserRoles.role
+import kotlinx.serialization.Serializable
 import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.ReferenceOption
 import org.jetbrains.exposed.sql.ResultRow
@@ -30,7 +31,7 @@ object UserRoles : Table("user_roles") {
     }
 }
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class User(
     val id: Int,
     val name: String,
@@ -40,7 +41,7 @@ data class User(
     val roles: Set<Role> = emptySet()
 )
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class NewUser(
     val name: String,
     val password: String,
@@ -59,7 +60,7 @@ data class NewUser(
     }
 }
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class EditUser(
     val id: Int,
     val name: String,

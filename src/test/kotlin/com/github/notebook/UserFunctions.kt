@@ -4,8 +4,9 @@ import com.github.notebook.model.EditUser
 import com.github.notebook.model.NewUser
 import com.github.notebook.model.Role
 import com.github.notebook.model.User
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 data class NoValidationUser(
     val id: Int? = null,
     val name: String? = null,

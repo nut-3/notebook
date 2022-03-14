@@ -3,7 +3,6 @@
 package com.github.notebook.model
 
 import com.github.notebook.common.LocalDateTimeAsStringSerializer
-import com.github.notebook.service.UserService
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import org.jetbrains.exposed.dao.id.IntIdTable
@@ -16,56 +15,58 @@ import org.valiktor.functions.isPositive
 import org.valiktor.validate
 import java.time.LocalDateTime
 
-object Notebooks : IntIdTable(name = "notebooks") {
-    val name = varchar("name", 150)
-    val userId = reference("user_id", Users.id, onDelete = ReferenceOption.CASCADE)
+object Notes : IntIdTable(name = "notes") {
+    val notebookId = reference("notebook_id", Notebooks.id, onDelete = ReferenceOption.CASCADE)
     val created = datetime("create_dt").default(LocalDateTime.now())
     val updated = datetime("update_dt").default(LocalDateTime.now())
+    val subject = varchar("subject", 100)
+    val body = text("body").nullable()
 
     init {
-        uniqueIndex(name, userId)
+        uniqueIndex(notebookId, subject)
     }
 }
 
 @Serializable
-data class Notebook(
+data class Note(
     val id: Int,
-    val name: String,
     val created: LocalDateTime,
     val updated: LocalDateTime,
-    val owner: String?
+    val subject: String,
+    val body: String?
 )
 
 @Serializable
-data class NewNotebook(
-    val name: String
+data class NewNote(
+    val subject: String,
+    val body: String?
 ) {
     init {
         validate(this) {
-            validate(NewNotebook::name).isNotNull().hasSize(min = 3, max = 150)
+            validate(NewNote::subject).isNotNull().hasSize(min = 3, max = 100)
         }
     }
 }
 
 @Serializable
-data class EditNotebook(
+data class EditNote(
     val id: Int,
-    val name: String
+    val subject: String,
+    val body: String?
 ) {
     init {
         validate(this) {
-            validate(EditNotebook::id).isNotNull().isPositive()
-            validate(EditNotebook::name).isNotNull().hasSize(min = 3, max = 150)
+            validate(EditNote::id).isNotNull().isPositive()
+            validate(EditNote::subject).isNotNull().hasSize(min = 3, max = 100)
         }
     }
 }
 
-
-fun Notebooks.toNotebook(row: ResultRow, adminMode: Boolean = false): Notebook =
-    Notebook(
+fun Notes.toNote(row: ResultRow): Note =
+    Note(
         id = row[id].value,
-        name = row[name],
         created = row[created],
         updated = row[updated],
-        owner = if (adminMode) UserService.get(row[userId].value).name else null
+        subject = row[subject],
+        body = row[body]
     )
