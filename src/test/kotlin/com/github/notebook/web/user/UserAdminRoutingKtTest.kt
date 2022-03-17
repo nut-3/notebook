@@ -14,12 +14,12 @@ import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 
-internal class UserAdminRoutingKtTest : ServerTest() {
+internal class UserAdminRoutingKtTest : ServerTest("/api/admin/users") {
 
     @Test
     fun `Test API get User with name='user'`() = runTest {
 
-        client.get("${UserAdminRouting().root}/${user.name}") {
+        client.get("$rootPath/${user.name}") {
             bearerAuth(adminJWT)
         }.apply {
             assertThat(this.status).isEqualTo(HttpStatusCode.OK)
@@ -31,7 +31,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     @Test
     fun `Test API get all Users`() = runTest {
 
-        client.get(UserAdminRouting().root) {
+        client.get(rootPath) {
             bearerAuth(adminJWT)
         }.apply {
 
@@ -44,7 +44,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     @Test
     fun `Test API create new user`() = runTest {
 
-        client.post(UserAdminRouting().root) {
+        client.post(rootPath) {
             bearerAuth(adminJWT)
             contentType(ContentType.Application.Json)
             setBody(serialize(newUser))
@@ -59,7 +59,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     @Test
     fun `Test API edit existing user`() = runTest {
 
-        client.put("${UserAdminRouting().root}/${user.name}") {
+        client.put("$rootPath/${user.name}") {
             bearerAuth(adminJWT)
             contentType(ContentType.Application.Json)
             setBody(serialize(updatedUser))
@@ -73,7 +73,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
     @Test
     fun `Test API delete existing user`() = runTest {
 
-        client.delete("${UserAdminRouting().root}/${user.name}") {
+        client.delete("$rootPath/${user.name}") {
             bearerAuth(adminJWT)
         }.apply {
             assertThat(this.status).isEqualTo(HttpStatusCode.NoContent)
@@ -87,7 +87,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         @Test
         fun `Test API create invalid user`() = runTest {
 
-            client.post(UserAdminRouting().root) {
+            client.post(rootPath) {
                 bearerAuth(adminJWT)
                 contentType(ContentType.Application.Json)
                 setBody(serialize(invalidUser))
@@ -99,7 +99,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         @Test
         fun `Test API get nonexistent user`() = runTest {
 
-            client.get("${UserAdminRouting().root}/$NON_EXISTENT_USER_NAME") {
+            client.get("$rootPath/$NON_EXISTENT_USER_NAME") {
                 bearerAuth(adminJWT)
             }.apply {
                 assertThat(this.status).isEqualTo(HttpStatusCode.NotFound)
@@ -109,7 +109,7 @@ internal class UserAdminRoutingKtTest : ServerTest() {
         @Test
         fun `Test API get users without ADMIN role`() = runTest {
 
-            client.get(UserAdminRouting().root) {
+            client.get(rootPath) {
                 bearerAuth(userJWT)
             }.apply {
                 assertThat(this.status).isEqualTo(HttpStatusCode.Forbidden)

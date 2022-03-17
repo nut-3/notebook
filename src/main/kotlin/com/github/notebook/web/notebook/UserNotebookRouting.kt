@@ -1,5 +1,6 @@
 package com.github.notebook.web.notebook
 
+import com.github.notebook.common.getClaim
 import com.github.notebook.common.withRole
 import com.github.notebook.model.Role
 import com.github.notebook.plugins.API_AUTH
@@ -7,54 +8,40 @@ import com.github.notebook.service.NotebookService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.auth.jwt.*
-import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-
-@JvmInline
-value class UserNotebookRouting(val root: String = "/api/notebooks")
+import io.ktor.server.util.*
 
 fun Route.notebookRouting() {
     authenticate(API_AUTH) {
         withRole(Role.USER) {
-            route(UserNotebookRouting().root) {
+            route("/api/notebooks") {
                 get {
-                    val principal = call.authentication.principal<JWTPrincipal>()!!
-                    val principalId = principal.getClaim("userId", Int::class)!!
-                    val notebooks = NotebookService.getAllByUserId(principalId)
+                    val notebooks = NotebookService.getAll(call.getClaim("userId"))
                     call.respond(HttpStatusCode.OK, notebooks)
                 }
 
                 get("/{id}") {
-                    val principal = call.authentication.principal<JWTPrincipal>()!!
-                    val principalId = principal.getClaim("userId", Int::class)!!
-                    val notebookId = call.parameters["id"] ?: throw MissingRequestParameterException("id")
-                    val notebook = NotebookService.getByIdAndUserId(notebookId.toInt(), principalId)
+                    val notebookId = call.parameters.getOrFail("id")
+                    val notebook = NotebookService.get(notebookId.toInt(), call.getClaim("userId"))
                     call.respond(HttpStatusCode.OK, notebook)
                 }
 
                 post {
-                    val principal = call.authentication.principal<JWTPrincipal>()!!
-                    val principalId = principal.getClaim("userId", Int::class)!!
-                    NotebookService.createByIdAndUserId(call.receive(), principalId)
+                    NotebookService.create(call.receive(), call.getClaim("userId"))
                     call.respond(HttpStatusCode.NoContent)
                 }
 
                 put("/{id}") {
-                    val principal = call.authentication.principal<JWTPrincipal>()!!
-                    val principalId = principal.getClaim("userId", Int::class)!!
-                    val notebookId = call.parameters["id"] ?: throw MissingRequestParameterException("id")
-                    NotebookService.deleteByIdAndUserId(notebookId.toInt(), principalId)
+                    val notebookId = call.parameters.getOrFail("id")
+                    NotebookService.delete(notebookId.toInt(), call.getClaim("userId"))
                     call.respond(HttpStatusCode.NoContent)
                 }
 
                 delete("/{id}") {
-                    val principal = call.authentication.principal<JWTPrincipal>()!!
-                    val principalId = principal.getClaim("userId", Int::class)!!
-                    val notebookId = call.parameters["id"] ?: throw MissingRequestParameterException("id")
-                    NotebookService.updateByIdAndUserId(call.receive(), notebookId.toInt(), principalId)
+                    val notebookId = call.parameters.getOrFail("id")
+                    NotebookService.update(call.receive(), notebookId.toInt(), call.getClaim("userId"))
                     call.respond(HttpStatusCode.NoContent)
                 }
             }

@@ -15,12 +15,12 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
 import org.junit.jupiter.api.Test
 
-internal class ProfileRoutingKtTest : ServerTest() {
+internal class ProfileRoutingKtTest : ServerTest("/api/admin/users") {
 
     @Test
     fun `Test API get profile for current user`() = runTest {
 
-        client.get(ProfileRouting().root) {
+        client.get(rootPath) {
             bearerAuth(userJWT)
         }.apply {
             Assertions.assertThat(this.status).isEqualTo(HttpStatusCode.OK)
@@ -31,7 +31,7 @@ internal class ProfileRoutingKtTest : ServerTest() {
     @Test
     fun `Test API edit current user`() = runTest {
 
-        client.put(ProfileRouting().root) {
+        client.put(rootPath) {
             bearerAuth(userJWT)
             contentType(ContentType.Application.Json)
             setBody(serialize(updatedUser))

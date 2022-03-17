@@ -10,7 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 
 
-open class ServerTest {
+open class ServerTest(val rootPath: String) {
 
     companion object {
 

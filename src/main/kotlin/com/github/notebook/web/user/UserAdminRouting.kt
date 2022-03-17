@@ -8,24 +8,21 @@ import com.github.notebook.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-
-@JvmInline
-value class UserAdminRouting(val root: String = "/api/admin/users")
+import io.ktor.server.util.*
 
 fun Route.userAdminRouting() {
     authenticate(API_AUTH) {
         withRole(Role.ADMIN) {
-            route(UserAdminRouting().root) {
+            route("/api/admin/users") {
                 get {
                     call.respond(HttpStatusCode.OK, UserService.getAll())
                 }
 
                 get("/{name}") {
-                    val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
+                    val userName = call.parameters.getOrFail("name")
                     val user = UserService.get(userName)
                     call.respond(HttpStatusCode.OK, user)
                 }
@@ -36,13 +33,13 @@ fun Route.userAdminRouting() {
                 }
 
                 put("/{name}") {
-                    val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
+                    val userName = call.parameters.getOrFail("name")
                     UserService.update(call.receive(), userName)
                     call.respond(HttpStatusCode.NoContent)
                 }
 
                 delete("/{name}") {
-                    val userName = call.parameters["name"] ?: throw MissingRequestParameterException("name")
+                    val userName = call.parameters.getOrFail("name")
                     UserService.delete(userName)
                     call.respond(HttpStatusCode.NoContent)
                 }

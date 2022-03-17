@@ -11,37 +11,37 @@ import java.time.LocalDateTime
 
 object NotebookService {
 
-    fun getAllByUserId(userId: Int) = transaction {
+    fun getAll(userId: Int) = transaction {
         addLogger(Slf4jSqlDebugLogger)
         Notebooks.select { Notebooks.userId eq userId }.mapNotNull { Notebooks.toNotebook(it) }
     }
 
-    fun getByIdAndUserId(notebookId: Int, userId: Int) = transaction {
+    fun get(notebookId: Int, userId: Int) = transaction {
         addLogger(Slf4jSqlDebugLogger)
         Notebooks.select { Notebooks.userId eq userId and (Notebooks.id eq notebookId) }.map { Notebooks.toNotebook(it) }
             .singleOrNull() ?: throw NotFoundException("Notebook with id=$notebookId and userId=$userId not found")
     }
 
-    fun updateByIdAndUserId(notebook: EditNotebook, notebookId: Int, userId: Int) = transaction {
+    fun update(notebook: EditNotebook, notebookId: Int, userId: Int) = transaction {
         addLogger(Slf4jSqlDebugLogger)
         if (notebook.id != notebookId) throw IllegalArgumentException("Wrong notebook data")
-        val updatedRows = Notebooks.update({Notebooks.id eq notebookId}) {
+        val updatedRows = Notebooks.update({Notebooks.id eq notebookId and (Notebooks.userId eq userId)}) {
             it[name] = notebook.name
             it[updated] = LocalDateTime.now()
         }
         if (updatedRows == 0) throw NotFoundException("Notebook with id=$id and userId=$userId not found")
     }
 
-    fun createByIdAndUserId(notebook: NewNotebook, principalId: Int) = transaction {
+    fun create(notebook: NewNotebook, userId: Int) = transaction {
         addLogger(Slf4jSqlDebugLogger)
         val newId = Notebooks.insertAndGetId {
             it[name] = notebook.name
-            it[userId] = principalId
+            it[this.userId] = userId
         }
         return@transaction get(newId.value)
     }
 
-    fun deleteByIdAndUserId(notebookId: Int, userId: Int) = transaction {
+    fun delete(notebookId: Int, userId: Int) = transaction {
         addLogger(Slf4jSqlDebugLogger)
         val updatedRows = Notebooks.deleteWhere { Notebooks.id eq notebookId }
         if (updatedRows == 0) throw NotFoundException("Notebook with id=$notebookId and userId=$userId not found")

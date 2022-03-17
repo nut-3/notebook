@@ -10,12 +10,12 @@ import io.ktor.http.*
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class AuthRoutingKtTest : ServerTest() {
+internal class AuthRoutingKtTest : ServerTest("") {
 
     @Test
     fun `Test Login page`() = runTest {
 
-        client.submitForm("${AuthRouting().root}/login") {
+        client.submitForm("$rootPath/login") {
             setBody(
                 FormDataContent(
                     parametersOf("username" to listOf(user.name), "password" to listOf(USER_PASSWORD))
