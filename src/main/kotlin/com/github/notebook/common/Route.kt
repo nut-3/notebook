@@ -28,6 +28,6 @@ fun Route.withRole(role: Role, callback: Route.() -> Unit): Route {
 }
 
 inline fun <reified T> ApplicationCall.getClaim(name: String): T {
-    val principal = authentication.principal<JWTPrincipal>()!!
-    return (principal[name] as T)!!
+    val principal = this.authentication.principal<JWTPrincipal>()!!
+    return principal.getClaim(name, Any::class) as T
 }

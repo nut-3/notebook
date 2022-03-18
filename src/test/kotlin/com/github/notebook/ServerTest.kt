@@ -10,7 +10,7 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 
 
-open class ServerTest(val rootPath: String) {
+open class ServerTest(val rootPath: String = "") {
 
     companion object {
 
@@ -43,9 +43,7 @@ open class ServerTest(val rootPath: String) {
     }
 
     @Suppress("UNUSED_EXPRESSION")
-    fun runTest(
-        block: suspend ServerTest.() -> Unit
-    ) {
+    fun runTest(block: suspend ServerTest.() -> Unit) {
         runBlocking { block() }
     }
 }

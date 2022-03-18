@@ -11,11 +11,10 @@ import com.github.notebook.user
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
-internal class ProfileRoutingKtTest : ServerTest("/api/admin/users") {
+internal class ProfileRoutingKtTest : ServerTest("/api/profile") {
 
     @Test
     fun `Test API get profile for current user`() = runTest {
@@ -23,8 +22,9 @@ internal class ProfileRoutingKtTest : ServerTest("/api/admin/users") {
         client.get(rootPath) {
             bearerAuth(userJWT)
         }.apply {
-            Assertions.assertThat(this.status).isEqualTo(HttpStatusCode.OK)
-            Assertions.assertThat(deSerialize<User>(this.bodyAsText())).usingRecursiveComparison().isEqualTo(user)
+            assertThat(this.status).isEqualTo(HttpStatusCode.OK)
+            assertThat(deSerialize<User>(this.bodyAsText())).usingRecursiveComparison(comparisonConfiguration)
+                .isEqualTo(user)
         }
     }
 
@@ -36,11 +36,9 @@ internal class ProfileRoutingKtTest : ServerTest("/api/admin/users") {
             contentType(ContentType.Application.Json)
             setBody(serialize(updatedUser))
         }.apply {
-            Assertions.assertThat(this.status).isEqualTo(HttpStatusCode.NoContent)
+            assertThat(this.status).isEqualTo(HttpStatusCode.NoContent)
             val userInDb = UserService.get(updatedUser.name)
-            Assertions.assertThat(userInDb).usingRecursiveComparison(
-                RecursiveComparisonConfiguration.builder().withIgnoreCollectionOrder(true).build()
-            ).isEqualTo(updatedUser.toUser())
+            assertThat(userInDb).usingRecursiveComparison(comparisonConfiguration).isEqualTo(updatedUser.toUser())
         }
     }
 }

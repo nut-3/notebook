@@ -7,7 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
 internal class AuthRoutingKtTest : ServerTest("") {
@@ -22,8 +22,8 @@ internal class AuthRoutingKtTest : ServerTest("") {
                 )
             )
         }.apply {
-            Assertions.assertThat(this.status).isEqualTo(HttpStatusCode.OK)
-            Assertions.assertThat(this.bodyAsText()).contains("Hello, ${user.name}!")
+            assertThat(this.status).isEqualTo(HttpStatusCode.OK)
+            assertThat(this.bodyAsText()).contains("Hello, ${user.name}!")
         }
     }
 }
