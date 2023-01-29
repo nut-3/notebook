@@ -21,6 +21,7 @@ object DbConfig {
 
     private fun flyway(dataSource: DataSource) = Flyway.configure()
         .dataSource(dataSource)
+        .cleanDisabled(false)
         .locations(Location("classpath:**/db/migration"))
         .load()
 

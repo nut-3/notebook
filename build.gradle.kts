@@ -20,7 +20,7 @@ plugins {
 }
 
 group = "com.github.notebook"
-version = "0.0.1"
+version = "0.1.0"
 application {
     mainClass.set("io.ktor.server.cio.EngineMain")
 }
@@ -34,15 +34,15 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-core-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cio-jvm:$ktorVersion")
-    implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-cors-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
-    implementation("io.github.microutils:kotlin-logging-jvm:$loggingVersion")
     implementation("io.ktor:ktor-server-html-builder:$ktorVersion")
     implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.github.microutils:kotlin-logging-jvm:$loggingVersion")
     implementation("at.favre.lib:bcrypt:$bcryptVersion")
 
     // https://mvnrepository.com/artifact/com.h2database/h2
@@ -66,8 +66,6 @@ dependencies {
     // Tests
     testImplementation("org.assertj:assertj-core:$assertjVersion")
     testImplementation("io.mockk:mockk:$mockkVersion")
-//    testImplementation("io.ktor:ktor-client-core-jvm:$ktorVersion")
-//    testImplementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
     testImplementation("io.ktor:ktor-server-test-host-jvm:$ktorVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")

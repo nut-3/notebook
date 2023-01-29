@@ -4,6 +4,7 @@ import com.github.notebook.common.ForbiddenException
 import com.github.notebook.model.*
 import io.ktor.server.plugins.*
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object UserService {
@@ -48,8 +49,8 @@ object UserService {
         }
         if (numRows == 0) throw NotFoundException("User with name=$userName not found")
         val oldRoles = UserRoles.select { UserRoles.userId eq user.id }.mapTo(mutableSetOf()) { it[UserRoles.role] }
-        oldRoles.minus(user.roles).forEach {
-            UserRoles.deleteWhere { (UserRoles.userId eq user.id) and (UserRoles.role eq it) }
+        oldRoles.minus(user.roles).forEach {oldRole ->
+            UserRoles.deleteWhere { (userId eq user.id) and (role eq oldRole) }
         }
         user.roles.minus(oldRoles).forEach { currentRole ->
             UserRoles.insert {

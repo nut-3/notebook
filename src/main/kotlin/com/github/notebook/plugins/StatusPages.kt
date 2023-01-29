@@ -4,6 +4,7 @@ import com.github.notebook.common.ForbiddenException
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.*
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.response.*
 import org.valiktor.ConstraintViolationException
 import java.time.LocalDateTime
@@ -19,20 +20,25 @@ fun Application.configureStatusPages() {
                             .toList()
                     call.respond(ResponseEntity(HttpStatusCode.UnprocessableEntity, detailMessage))
                 }
+
                 is ForbiddenException -> call.respond(
                     ResponseEntity(
                         cause.httpStatus, listOf(cause.message.toString())
                     )
                 )
+
                 is UnsupportedMediaTypeException -> call.respond(
                     ResponseEntity(HttpStatusCode.UnsupportedMediaType, listOf(cause.message.toString()))
                 )
+
                 is BadRequestException -> call.respond(
                     ResponseEntity(HttpStatusCode.BadRequest, listOf(cause.message.toString()))
                 )
+
                 is NotFoundException -> call.respond(
                     ResponseEntity(HttpStatusCode.NotFound, listOf(cause.message.toString()))
                 )
+
                 else -> call.respond(
                     ResponseEntity(
                         HttpStatusCode.InternalServerError,

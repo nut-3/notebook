@@ -27,8 +27,7 @@ open class ServerTest(val rootPath: String = "") {
 
         @BeforeAll
         @JvmStatic
-        @Suppress("unused")
-        private fun initTests() {
+        fun initTests() {
             JwtService.setConfig(testConfig)
             adminJWT = JwtService.generateJwt(admin)
             userJWT = JwtService.generateJwt(user)

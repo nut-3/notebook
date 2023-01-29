@@ -24,7 +24,7 @@ fun Application.configureSecurity() {
             passwordParamName = "password"
             validate { credentials ->
                 val userName = credentials.name
-                log.info("Auth {}", userName)
+                this@configureSecurity.log.info("Auth $userName")
                 val result = UserService.getUserStatus(userName)
                 if (!result[active]) throw ForbiddenException("User $userName is inactive")
                 if (PasswordService.verifyPassword(credentials.password, result[password])) {

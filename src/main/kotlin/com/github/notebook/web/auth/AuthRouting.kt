@@ -20,8 +20,10 @@ fun Route.authRouting(root: String = AuthRouting().root) {
             val userName = call.principal<UserIdPrincipal>()!!.name
             val user = UserService.get(userName)
             val jwtToken = JwtService.generateJwt(user)
-            call.respondText("Hello, $userName!\n" +
-                    "You JWT Token: $jwtToken")
+            call.respondText(
+                "Hello, $userName!\n" +
+                        "You JWT Token: $jwtToken"
+            )
         }
     }
 
